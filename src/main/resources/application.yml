@@ -1,0 +1,27 @@
+server:
+  port: ${SERVER_PORT:${PORT:8080}}
+
+spring:
+  application:
+    name: zpl-handcricket-backend
+  datasource:
+    # Example Supabase JDBC URL:
+    # jdbc:postgresql://db.xxxxxxxx.supabase.co:5432/postgres?sslmode=require
+    # Supports both legacy FPL_* vars and README DATABASE_* vars.
+    # Falls back to local Postgres defaults so startup errors are actionable.
+    url: ${FPL_DB_URL:${DATABASE_URL:jdbc:postgresql://localhost:5433/fpl_db}}
+    username: ${FPL_DB_USERNAME:${DATABASE_USERNAME:postgres}}
+    password: ${FPL_DB_PASSWORD:${DATABASE_PASSWORD:postgres}}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+
+app:
+  jwt:
+    secret: ${JWT_SECRET:change-me-in-production-please-use-a-long-random-string}
+    expirationHours: 720   # 30 days
+
+logging:
+  level:
+    com.zpl: INFO
+    org.springframework.web.socket: INFO
