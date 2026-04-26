@@ -57,10 +57,6 @@ public class UserRepository {
         jdbc.update("update users set team_id = ? where id = ?", teamId, userId);
     }
 
-    public void decrementMatchesLeft(UUID userId) {
-        jdbc.update("update users set matches_left_today = greatest(matches_left_today - 1, 0) where id = ?", userId);
-    }
-
     public void addResult(UUID userId, int runs, boolean won) {
         jdbc.update("""
                 update users
@@ -69,14 +65,5 @@ public class UserRepository {
                        matches_won = matches_won + ?
                  where id = ?
                 """, runs, won ? 1 : 0, userId);
-    }
-
-    public void resetDailyIfNeeded() {
-        jdbc.update("""
-                update users
-                   set matches_left_today = 3,
-                       last_reset_at = now()
-                 where last_reset_at < (now() - interval '24 hours')
-                """);
     }
 }

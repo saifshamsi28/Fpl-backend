@@ -4,7 +4,7 @@ services:
     runtime: docker
     plan: free
     autoDeploy: true
-    healthCheckPath: /api/teams
+    healthCheckPath: /api/health
     envVars:
       - key: SERVER_PORT
         value: 8080
@@ -12,6 +12,16 @@ services:
         value: 2
       - key: DB_MIN_IDLE
         value: 0
+      - key: DB_CONNECTION_TIMEOUT_MS
+        value: 10000
+      - key: DB_VALIDATION_TIMEOUT_MS
+        value: 5000
+      - key: DB_MAX_LIFETIME_MS
+        value: 240000
+      - key: DB_IDLE_TIMEOUT_MS
+        value: 60000
+      - key: DB_KEEPALIVE_MS
+        value: 120000
       - key: FLYWAY_CONNECT_RETRIES
         value: 10
       - key: JWT_SECRET

@@ -61,6 +61,15 @@ public class RoomRepository {
         jdbc.update("update rooms set status = 'CLOSED' where id = ?", roomId);
     }
 
+    public int closeStaleRooms() {
+        return jdbc.update("""
+                update rooms
+                   set status = 'CLOSED'
+                 where status in ('WAITING', 'READY')
+                   and created_at < (now() - interval '24 hours')
+                """);
+    }
+
     public boolean codeExists(String code) {
         Integer c = jdbc.queryForObject("select count(*) from rooms where code = ?", Integer.class, code);
         return c != null && c > 0;

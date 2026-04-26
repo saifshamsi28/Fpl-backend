@@ -1,6 +1,5 @@
 package com.zpl.handcricket.controller;
 
-import com.zpl.handcricket.model.Room;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,10 +12,11 @@ import java.util.Map;
 public class HealthController {
 
     @GetMapping()
-    public ResponseEntity<?> create(@RequestHeader("Authorization") String auth) {
-        Map<String,String> map = new HashMap<>();
-        map.put("status","ok");
-        map.put("timestamp",""+ LocalDateTime.now());
+    public ResponseEntity<?> health() {
+        Map<String, String> map = new HashMap<>();
+        map.put("status", "ok");
+        map.put("service", "zpl-handcricket-backend");
+        map.put("timestamp", "" + LocalDateTime.now());
         return ResponseEntity.ok(map);
     }
 }

@@ -1,11 +1,14 @@
 package com.zpl.handcricket.controller;
 
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.jdbc.CannotGetJdbcConnectionException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.sql.SQLTransientConnectionException;
 
 import java.util.Map;
 
@@ -25,5 +28,11 @@ public class ApiExceptionHandler {
     public ResponseEntity<Map<String, String>> handleDataIntegrity(DataIntegrityViolationException ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(Map.of("error", "Database constraint violation"));
+    }
+
+    @ExceptionHandler({CannotGetJdbcConnectionException.class, SQLTransientConnectionException.class})
+    public ResponseEntity<Map<String, String>> handleDbConnectivity(Exception ex) {
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
+                .body(Map.of("error", "Database temporarily unavailable. Please retry."));
     }
 }

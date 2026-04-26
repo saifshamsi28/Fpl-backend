@@ -5,6 +5,7 @@ import com.zpl.handcricket.repository.UserRepository;
 import com.zpl.handcricket.service.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,10 +25,10 @@ public class AuthController {
     @PostMapping("/signup")
     public ResponseEntity<?> signup(@RequestBody AuthRequest req) {
         if (req.username() == null || req.username().isBlank() || req.password() == null || req.password().length() < 4) {
-            return ResponseEntity.badRequest().body(Map.of("error", "Invalid username/password"));
+            return ResponseEntity.badRequest().body(Map.of("error", "Enter a valid username and a password with at least 4 characters"));
         }
         if (users.findByUsername(req.username()).isPresent()) {
-            return ResponseEntity.badRequest().body(Map.of("error", "Username already taken"));
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("error", "Username already exists"));
         }
         User u = users.save(req.username(), encoder.encode(req.password()));
         String token = jwt.issue(u.getId(), u.getUsername());
@@ -41,7 +42,7 @@ public class AuthController {
     public ResponseEntity<?> login(@RequestBody AuthRequest req) {
         var opt = users.findByUsername(req.username());
         if (opt.isEmpty() || !encoder.matches(req.password(), opt.get().getPasswordHash())) {
-            return ResponseEntity.status(401).body(Map.of("error", "Invalid credentials"));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Invalid username or password"));
         }
         User u = opt.get();
         String token = jwt.issue(u.getId(), u.getUsername());
