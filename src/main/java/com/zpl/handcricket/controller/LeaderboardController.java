@@ -46,16 +46,17 @@ public class LeaderboardController {
     public PageResponseDto<LeaderboardEntryDto> list(
             @RequestHeader("Authorization") String authorization,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "25") int size
+            @RequestParam(defaultValue = "25") int size,
+            @RequestParam(defaultValue = "all_time") String period
     ) {
         var me = auth.requireUser(authorization);
         int safePage = Math.max(0, page);
         int safeSize = Math.max(1, Math.min(size, 100));
 
-        long totalItems = users.leaderboardCount();
+        long totalItems = users.leaderboardCount(period);
         int totalPages = (int) Math.max(1, Math.ceil((double) totalItems / safeSize));
 
-        List<LeaderboardEntryDto> rows = users.leaderboard(safePage, safeSize).stream()
+        List<LeaderboardEntryDto> rows = users.leaderboard(safePage, safeSize, period).stream()
                 .map(r -> new LeaderboardEntryDto(
                         r.rank(),
                         r.userId().toString(),
